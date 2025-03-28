@@ -14,12 +14,14 @@
 		});
 		console.log(js.code, css?.code);
 		const componentSrc = URL.createObjectURL(new Blob([js.code], { type: 'text/javascript' }));
+		// The error happens here
 		const { default: Component } = await import(/* @vite-ignore */ componentSrc);
+		// ...I've not managed to test anything beyond this point
 		URL.revokeObjectURL(componentSrc);
 		divElement.innerHTML = '';
 		myComponent = new Component({
 			target: divElement,
-			props: { arr: [4, 5, 6, 7, 8] },
+			props: { arr: [4, 5, 6, 7, 8] }
 		});
 		console.log(myComponent);
 	};
