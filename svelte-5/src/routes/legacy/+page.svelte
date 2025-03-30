@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { compile } from 'svelte/compiler';
-	import rawSource from './Source.svelte?raw';
-	import Source from './Source.svelte';
+	import rawSource from '../Source.svelte?raw';
+	import Source from '../Source.svelte';
 
 	let source = $state(rawSource);
 	let divElement: HTMLDivElement;
@@ -12,32 +12,19 @@
 		const { js, css } = compile(source, {
 			runes: true,
 			compatibility: {
-				componentApi: 4
-			}
+				componentApi: 4 // Means we can do `new Component({ ... })`
+			},
+			customElement: true // Means the css is injected
 		});
 		console.log(js.code, css?.code);
 		const componentSrc = URL.createObjectURL(new Blob([js.code], { type: 'text/javascript' }));
-		// The error happens here
 		const { default: Component } = await import(/* @vite-ignore */ componentSrc);
-		// ...I've not managed to test anything beyond this point
 		URL.revokeObjectURL(componentSrc);
 		divElement.innerHTML = '';
-		// Attempt 1 - Use the `new` operator
 		myComponent = new Component({
 			target: divElement,
 			props: { arr: [4, 5, 6, 7, 8] }
 		});
-		console.log(myComponent);
-		// // Attempt 2 - Call the constructor directly
-		// Component(divElement, { arr: [1, 2, 3] });
-		// Attempt 3 - Use the mount function
-		// myComponent = mount(Component(), {
-		// 	target: divElement,
-		// 	props: { arr: [1, 2, 3] }
-		// });
-		// Attempt 4 - using custom elements
-		// console.log(Component);
-		// window.customElements.define('my-custom-element', Component());
 	};
 
 	const updateProps = () => {
@@ -69,8 +56,6 @@
 		}
 	</script>
 </svelte:head>
-
-<a href="./legacy">legacy mode (works)</a>
 
 <h1>Svelte 5 - Compiler</h1>
 <p>See: https://stackoverflow.com/a/73339006</p>
