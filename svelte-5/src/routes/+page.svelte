@@ -23,10 +23,21 @@
 		const componentSrc = URL.createObjectURL(new Blob([js.code], { type: 'text/javascript' }));
 		const { default: Component } = await import(/* @vite-ignore */ componentSrc);
 		URL.revokeObjectURL(componentSrc);
+		// This works with `componentApi: 4`
 		myComponent = new Component({
 			target: divElement,
 			props: { arr: [4, 5, 6, 7, 8] }
 		});
+		// ...but how to make it work with `componentApi: 5`?
+		// Attempt 1 - Call the constructor directly
+		// Component(divElement, { arr: [1, 2, 3] });
+		// Attempt 2 - Use the mount function
+		// myComponent = mount(Component(), {
+		// 	target: divElement,
+		// 	props: { arr: [1, 2, 3] }
+		// });
+		// Attempt 3 - using a custom element
+		// window.customElements.define('my-custom-element', Component());
 		isBusy = false;
 	};
 
